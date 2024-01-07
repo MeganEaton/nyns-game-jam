@@ -11,6 +11,7 @@ material = SubResource("StandardMaterial3D_njjjr")
 [node name="PhantomBlock" type="Node3D"]
 
 [node name="PhantomStaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, -0.01, 2.08165e-12)
 collision_layer = 32
 collision_mask = 0
 

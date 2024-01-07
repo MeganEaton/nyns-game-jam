@@ -62,11 +62,12 @@ func _physics_process(delta: float) -> void:
             #check if it is in layer 5=17 or 6=32
             if _aim_collider.get_collision_layer() == 17:
                 print("Found a normal block")
-                
+                place_block_on_top(_aim_collider)
+                place_debug_sphere(_aim_target)
             if _aim_collider.get_collision_layer() == 32:
                 print("Found a phantom block")
                 replace_phatom_with_normal(_aim_collider)
-                   
+                place_debug_sphere(_aim_target)   
 
     # Set camera controller to current ground level for the character
     var target_position := _anchor.global_position + _offset
@@ -120,15 +121,44 @@ func get_aim_collider() -> Node:
     else:
         return null
 
-func replace_phatom_with_normal(aim_collider):
-    print("jhaha")
+func cube_instance_and_parent(aim_collider):
     var cube_scene = preload("res://BuildingMechanic/cube.tscn")
     var cube = cube_scene.instantiate()
     
     # TODO "bad way to to add this to the world
     var parent_cube = aim_collider.get_parent().get_parent()
     parent_cube.add_child(cube)
-    print("new cube location ", cube.global_position)
     
+    return cube
+func replace_phatom_with_normal(aim_collider):
+    var cube = cube_instance_and_parent(aim_collider)
+    print("new cube location ", cube.global_position)
     cube.global_position = aim_collider.global_position
-    #aim_collider.queue_free()
+    
+    # cheat because the collisions are y=-0.01 so that we can keep the normal blocks on top
+    # so we have to add that back here on the normal blocks, since we based of the displaced position of the phantom
+    cube.global_position.y += 0.01
+
+func place_block_on_top(aim_collider):
+    var cube = cube_instance_and_parent(aim_collider)
+    print("new cube location ", cube.global_position)
+    cube.global_position = aim_collider.global_position
+    cube.global_position.y += 1.0
+    
+func place_debug_sphere(aim_target):
+    print("placing debug spehere at ", aim_target)
+    var cube_scene = preload("res://BuildingMechanic/debug_sphere.tscn")
+    var cube = cube_scene.instantiate()
+    
+    #var parent_cube = aim_collider.get_parent().get_parent()
+    get_tree().get_root().add_child(cube)
+    
+    cube.global_position = aim_target
+    
+
+    var timer = Timer.new()
+    timer.connect("timeout",cube.queue_free)
+    timer.wait_time = 1
+    timer.one_shot = true
+    add_child(timer)
+    timer.start()
