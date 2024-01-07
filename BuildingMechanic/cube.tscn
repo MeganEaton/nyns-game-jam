@@ -1,0 +1,32 @@
+[gd_scene load_steps=4 format=3 uid="uid://cto1pojjd3or"]
+
+[ext_resource type="PackedScene" uid="uid://qmtr48pkp6nd" path="res://BuildingMechanic/phantom_block.tscn" id="1_3i05t"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_3l7ys"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_awr2a"]
+
+[node name="Cube" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_3l7ys")
+
+[node name="CubeStaticBody3D" type="StaticBody3D" parent="."]
+collision_layer = 17
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CubeStaticBody3D"]
+shape = SubResource("BoxShape3D_awr2a")
+
+[node name="PhantomBlocks" type="Node3D" parent="."]
+
+[node name="PhantomBlock" parent="PhantomBlocks" instance=ExtResource("1_3i05t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2.08165e-12, 2.08165e-12)
+
+[node name="PhantomBlock4" parent="PhantomBlocks" instance=ExtResource("1_3i05t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, 1)
+
+[node name="PhantomBlock5" parent="PhantomBlocks" instance=ExtResource("1_3i05t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, -1)
+
+[node name="PhantomBlock6" parent="PhantomBlocks" instance=ExtResource("1_3i05t")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 2.08165e-12, 2.08165e-12)
