@@ -66,6 +66,10 @@ func _ready() -> void:
     # In that case, we register input actions for the user at runtime.
     if not InputMap.has_action("move_left"):
         _register_input_actions()
+        
+    # TODO not the best place
+    Globals.blueprint_block = get_node("BlueprintBlock")
+    Globals.blueprint_block.visible = false
 
 
 func _physics_process(delta: float) -> void:

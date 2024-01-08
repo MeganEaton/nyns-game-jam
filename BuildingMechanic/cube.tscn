@@ -1,14 +1,21 @@
-[gd_scene load_steps=4 format=3 uid="uid://cto1pojjd3or"]
+[gd_scene load_steps=6 format=3 uid="uid://cto1pojjd3or"]
 
 [ext_resource type="PackedScene" uid="uid://qmtr48pkp6nd" path="res://BuildingMechanic/phantom_block.tscn" id="1_3i05t"]
+[ext_resource type="Texture2D" uid="uid://b337gu24ywn5h" path="res://assets/Pickaxe_Snow004_1K-PNG_Color.png" id="1_enjd5"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wg38b"]
+albedo_texture = ExtResource("1_enjd5")
 
 [sub_resource type="BoxMesh" id="BoxMesh_3l7ys"]
+size = Vector3(2, 2, 2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_awr2a"]
+size = Vector3(2, 2, 2)
 
 [node name="Cube" type="Node3D"]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_wg38b")
 mesh = SubResource("BoxMesh_3l7ys")
 
 [node name="CubeStaticBody3D" type="StaticBody3D" parent="."]
@@ -20,13 +27,13 @@ shape = SubResource("BoxShape3D_awr2a")
 [node name="PhantomBlocks" type="Node3D" parent="."]
 
 [node name="PhantomBlock" parent="PhantomBlocks" instance=ExtResource("1_3i05t")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2.08165e-12, 2.08165e-12)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 2.08165e-12, 2.08165e-12)
 
 [node name="PhantomBlock4" parent="PhantomBlocks" instance=ExtResource("1_3i05t")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, 1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, 2)
 
 [node name="PhantomBlock5" parent="PhantomBlocks" instance=ExtResource("1_3i05t")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, -1)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, -2)
 
 [node name="PhantomBlock6" parent="PhantomBlocks" instance=ExtResource("1_3i05t")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 2.08165e-12, 2.08165e-12)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2.08165e-12, 2.08165e-12)

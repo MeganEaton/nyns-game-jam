@@ -51,10 +51,26 @@ func _physics_process(delta: float) -> void:
         
         _aim_target = _camera_raycast.get_collision_point()
         _aim_collider = _camera_raycast.get_collider()
+        if _aim_collider.get_collision_layer() == 32:
+            print("Found a normal block")
+            
+            Globals.blueprint_block.global_position = _aim_collider.global_position
+            Globals.blueprint_block.global_rotation = _aim_collider.global_rotation
+            Globals.blueprint_block.visible = true
+        if _aim_collider.get_collision_layer() != 32 and _aim_collider.get_collision_layer() != 17:
+            Globals.blueprint_block.visible = false
+        if _aim_collider.get_collision_layer() == 17:
+            print("Found a normal block")
+            
+            Globals.blueprint_block.global_position = _aim_collider.global_position + Vector3(0, Globals.block_size,0)
+            Globals.blueprint_block.global_rotation = _aim_collider.global_rotation
+            Globals.blueprint_block.visible = true
+
         #print("camera colliding", _aim_collider.name)
     else:
         _aim_target = _camera_raycast.global_transform * _camera_raycast.target_position
         _aim_collider = null
+        Globals.blueprint_block.visible = false
     if Input.is_action_just_pressed("undo"):
         if Globals.last_block_placed != []:
             Globals.last_block_placed.pop_back().queue_free()
@@ -77,9 +93,9 @@ func _physics_process(delta: float) -> void:
                 # let us not use raycast, instead worldspace
                 var space = get_world_3d().direct_space_state
                 var query_phantom = PhysicsRayQueryParameters3D.create(\
-                _aim_collider.global_position, _aim_collider.global_position + Vector3(0, -1, 0), pow(2, 6-1))
+                _aim_collider.global_position, _aim_collider.global_position + Vector3(0, -Globals.block_size, 0), pow(2, 6-1))
                 var query_normal = PhysicsRayQueryParameters3D.create(\
-                _aim_collider.global_position, _aim_collider.global_position + Vector3(0, -1, 0), pow(2, 5-1))
+                _aim_collider.global_position, _aim_collider.global_position + Vector3(0, -Globals.block_size, 0), pow(2, 5-1))
                 var result = space.intersect_ray(query_phantom)
                 var found_phantom = false
                 if result.size() > 0:
@@ -177,7 +193,8 @@ func place_block_on_top(aim_collider):
     var cube = cube_instance_and_parent(aim_collider)
     print("new cube location ", cube.global_position)
     cube.global_position = aim_collider.global_position
-    cube.global_position.y += 1.0
+    cube.global_rotation = aim_collider.global_rotation
+    cube.global_position.y += Globals.block_size
     Globals.last_block_placed.append(cube)
     if Globals.last_block_placed.size() > 5:
         Globals.last_block_placed.pop_front()
