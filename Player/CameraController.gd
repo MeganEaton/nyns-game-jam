@@ -28,7 +28,7 @@ var _mouse_input := false
 var _offset: Vector3
 var _anchor: CharacterBody3D
 var _euler_rotation: Vector3
-
+var _raycast_phantom_cube_under:= false
 
 func _unhandled_input(event: InputEvent) -> void:
     _mouse_input = event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED
@@ -55,6 +55,10 @@ func _physics_process(delta: float) -> void:
     else:
         _aim_target = _camera_raycast.global_transform * _camera_raycast.target_position
         _aim_collider = null
+    if Input.is_action_just_pressed("undo"):
+        if Globals.last_block_placed != []:
+            Globals.last_block_placed.pop_back().queue_free()
+            #Globals.last_block_placed.queue_free()
         
     if Input.is_action_just_pressed("add_block"):
         print("adding block")
@@ -66,8 +70,32 @@ func _physics_process(delta: float) -> void:
                 place_debug_sphere(_aim_target)
             if _aim_collider.get_collision_layer() == 32:
                 print("Found a phantom block")
-                replace_phatom_with_normal(_aim_collider)
-                place_debug_sphere(_aim_target)   
+                #start a raycast
+                #if it hits another phantom block
+                #replace that phantom block with a normal block
+
+                # let us not use raycast, instead worldspace
+                var space = get_world_3d().direct_space_state
+                var query_phantom = PhysicsRayQueryParameters3D.create(\
+                _aim_collider.global_position, _aim_collider.global_position + Vector3(0, -1, 0), pow(2, 6-1))
+                var query_normal = PhysicsRayQueryParameters3D.create(\
+                _aim_collider.global_position, _aim_collider.global_position + Vector3(0, -1, 0), pow(2, 5-1))
+                var result = space.intersect_ray(query_phantom)
+                var found_phantom = false
+                if result.size() > 0:
+                    found_phantom = true
+                var result2 = space.intersect_ray(query_normal)
+                var found_normal = false
+                if result2.size() > 0:
+                    found_normal = true
+                if found_phantom and ! found_normal:
+                    var hit_collider = result.collider
+                    print("hit a phantom block under")
+                    replace_phatom_with_normal(hit_collider)
+                else:
+                    print("raycast did not hit")
+                    replace_phatom_with_normal(_aim_collider)
+
 
     # Set camera controller to current ground level for the character
     var target_position := _anchor.global_position + _offset
@@ -131,19 +159,28 @@ func cube_instance_and_parent(aim_collider):
     
     return cube
 func replace_phatom_with_normal(aim_collider):
-    var cube = cube_instance_and_parent(aim_collider)
-    print("new cube location ", cube.global_position)
-    cube.global_position = aim_collider.global_position
+    var cube = null
+
+    cube = cube_instance_and_parent(aim_collider)
     
+    cube.global_position = aim_collider.global_position
+    print("new cube location ", cube.global_position)
+
     # cheat because the collisions are y=-0.01 so that we can keep the normal blocks on top
     # so we have to add that back here on the normal blocks, since we based of the displaced position of the phantom
     cube.global_position.y += 0.01
-
+    #Globals.last_block_placed = cube
+    Globals.last_block_placed.append(cube)
+    if Globals.last_block_placed.size() > 5:
+        Globals.last_block_placed.pop_front()
 func place_block_on_top(aim_collider):
     var cube = cube_instance_and_parent(aim_collider)
     print("new cube location ", cube.global_position)
     cube.global_position = aim_collider.global_position
     cube.global_position.y += 1.0
+    Globals.last_block_placed.append(cube)
+    if Globals.last_block_placed.size() > 5:
+        Globals.last_block_placed.pop_front()
     
 func place_debug_sphere(aim_target):
     print("placing debug spehere at ", aim_target)
